@@ -114,13 +114,12 @@ class MainActivity : AppCompatActivity() {
         // Speed can be be changed at any time during the playback
         // 支持倍速播放
         binding.sbPlayRate.onProgressChangedListener = object : BubbleSeekBar.OnProgressChangedListenerAdapter() {
-            override fun onProgressChanged(
+            override fun getProgressOnActionUp(
                 bubbleSeekBar: BubbleSeekBar,
                 progress: Int,
-                progressFloat: Float,
-                fromUser: Boolean
+                progressFloat: Float
             ) {
-                if (fromUser && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // Android 6.0
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // Android 6.0
                     mediaPlayer.run {
                         // Setting the speed will automatically start the playback.
                         // So we choose to manually start the playback in order to keep all UI status consistent.
