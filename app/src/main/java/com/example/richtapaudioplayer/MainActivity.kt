@@ -3,20 +3,19 @@ package com.example.richtapaudioplayer
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.SeekBar
 import androidx.appcompat.app.AlertDialog
-import com.example.richtapaudioplayer.databinding.ActivityMainBinding
-import java.io.*
-import java.lang.Exception
-import java.util.*
-import kotlin.collections.ArrayList
+import androidx.appcompat.app.AppCompatActivity
 import com.apprichtap.haptic.RichTapPlayer
 import com.apprichtap.haptic.RichTapUtils
 import com.apprichtap.haptic.sync.SyncCallback
+import com.example.richtapaudioplayer.databinding.ActivityMainBinding
+import com.xw.repo.BubbleSeekBar
+import java.io.*
+import java.util.*
 
 data class AudioAsset(val mediaFile: String, val heFile: String)
 
@@ -29,9 +28,12 @@ class MainActivity : AppCompatActivity() {
     private val mediaPlayer = MediaPlayer()
     private lateinit var hapticPlayer: RichTapPlayer
     // IMPORTANT: this callback is used for sync between media player and haptic player
+    //  If necessary, you can set an offset to do a hard sync with audio player.
     // 重要：下面这个回调用于媒体播放器与触感播放器之间的播放进度同步
-    private val syncCallback = SyncCallback { mediaPlayer.currentPosition }
-    private var playbackSpeed = 1.0F
+    //  必要的时候可以设置一个偏移值，用以校准媒体播放与振动之间的同步：负数表示将振动延迟，整数表示将振动前置。
+    private val syncCallback = SyncCallback {
+        mediaPlayer.currentPosition + binding.sbPlayerOffset.progress
+    }
 
     private val seekBarUpdateTimer = Timer()
     private var seekBarUpdateTask: TimerTask? = null
@@ -95,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
         // Seeking support during the playback
         // 支持在播放进度条上的拖动
-        binding.seekbarPlayer.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.sbPlayer.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -111,17 +113,14 @@ class MainActivity : AppCompatActivity() {
 
         // Speed can be be changed at any time during the playback
         // 支持倍速播放
-        binding.seekbarPlayRate.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    val speed = (0.5 + 1.5 * progress / 100).toFloat()
-                    binding.tvPlayRate.text = "${speed}X"
-                }
-            }
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-            }
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // Android 6.0
+        binding.sbPlayRate.onProgressChangedListener = object : BubbleSeekBar.OnProgressChangedListenerAdapter() {
+            override fun onProgressChanged(
+                bubbleSeekBar: BubbleSeekBar,
+                progress: Int,
+                progressFloat: Float,
+                fromUser: Boolean
+            ) {
+                if (fromUser && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // Android 6.0
                     mediaPlayer.run {
                         // Setting the speed will automatically start the playback.
                         // So we choose to manually start the playback in order to keep all UI status consistent.
@@ -130,15 +129,12 @@ class MainActivity : AppCompatActivity() {
                             binding.btnStart.performClick()
                         }
                         // 设置新的播放速度（Tips：在prepared状态下会自动开播！）
-                        playbackSpeed = (0.5 + 1.5 * seekBar.progress / 100).toFloat()
-                        playbackParams = playbackParams.setSpeed(playbackSpeed)
-                        hapticPlayer.speed = playbackSpeed
-
-                        binding.tvPlayRate.text = "${playbackSpeed}X"
+                        playbackParams = playbackParams.setSpeed(progressFloat)
+                        hapticPlayer.speed = progressFloat
                     }
                 }
             }
-        })
+        }
     }
 
     override fun onDestroy() {
@@ -157,9 +153,9 @@ class MainActivity : AppCompatActivity() {
         val fileToPlay = mediaList[curAssetIndex].mediaFile
         binding.sourceFile.text = "Now Playing: ${fileToPlay}"
         binding.btnStart.text = "Play"
-        binding.seekbarPlayer.progress = 0
-        binding.seekbarPlayRate.progress = 33 // speed = 1.0 by default
-        binding.tvPlayRate.text = "1.0X"
+        binding.sbPlayer.progress = 0
+        binding.sbPlayRate.setProgress(1.0F) // speed = 1.0 by default
+        binding.sbPlayerOffset.setProgress(0F);
 
         try {
             mediaPlayer.run {
@@ -207,7 +203,7 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer.run {
             if (isPlaying) {
                 val curPos = 100 * currentPosition / duration
-                binding.seekbarPlayer.progress = curPos
+                binding.sbPlayer.progress = curPos
             }
         }
     }

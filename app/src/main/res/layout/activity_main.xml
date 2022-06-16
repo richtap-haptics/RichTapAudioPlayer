@@ -14,7 +14,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp" />
     <SeekBar
-        android:id="@+id/seekbarPlayer"
+        android:id="@+id/sbPlayer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -54,39 +54,57 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="Speed: 0.5X"/>
-        <SeekBar
-            android:id="@+id/seekbarPlayRate"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:progressTint="@color/purple_200"
-            android:thumbTint="@color/purple_500"
-            android:max="100"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:text="2.0X"/>
-
-    </LinearLayout>
     <TextView
-        android:id="@+id/tvPlayRate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="11sp"
-        android:layout_marginStart="25dp" />
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="2dp"
+        android:textColor="@color/purple_200"
+        android:text="Speed:"/>
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/sbPlayRate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        app:bsb_bubble_color="@color/purple_500"
+        app:bsb_bubble_text_color="@color/white"
+        app:bsb_max="2.0"
+        app:bsb_min="0.5"
+        app:bsb_progress="1.0"
+        app:bsb_second_track_color="@color/purple_500"
+        app:bsb_show_progress_in_float="true"
+        app:bsb_show_section_mark="false"
+        app:bsb_show_section_text="true"
+        app:bsb_show_thumb_text="true"
+        app:bsb_track_color="@color/purple_200"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="2dp"
+        android:textColor="@color/purple_200"
+        android:text="Offset (ms):"/>
+    <com.xw.repo.BubbleSeekBar
+        android:id="@+id/sbPlayerOffset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        app:bsb_bubble_color="@color/purple_500"
+        app:bsb_bubble_text_color="@color/white"
+        app:bsb_max="1000"
+        app:bsb_min="-1000"
+        app:bsb_progress="0"
+        app:bsb_second_track_color="@color/purple_500"
+        app:bsb_show_progress_in_float="false"
+        app:bsb_section_count="2"
+        app:bsb_show_section_mark="true"
+        app:bsb_show_section_text="true"
+        app:bsb_show_thumb_text="true"
+        app:bsb_track_color="@color/purple_200"/>
 
 </LinearLayout>
