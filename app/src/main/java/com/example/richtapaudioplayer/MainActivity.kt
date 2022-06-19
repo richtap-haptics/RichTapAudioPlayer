@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer.currentPosition + binding.sbPlayerOffset.progress
     }
 
-    private val seekBarUpdateTimer = Timer()
+    private val seekBarUpdateTimer = Timer(true)
     private var seekBarUpdateTask: TimerTask? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
