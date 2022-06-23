@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
         // 停止播放当前的音乐
         binding.btnStop.setOnClickListener {
             seekBarUpdateTask?.cancel()
+            seekBarUpdateTimer.purge() // removed all cancelled tasks
             hapticPlayer.stop()  // 先停haptic player
             mediaPlayer.stop()
 
